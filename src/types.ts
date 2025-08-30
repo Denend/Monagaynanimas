@@ -5,13 +5,19 @@ export type GameState = 'menu' | 'playing' | 'gameover' | "countdown";
 export interface GameUIProps {
   killCount: number;
   buffTimerValue: number;
+  ultTimerValue?: number;
+  ultCooldownValue?: number;
+  dashCooldownSeconds?: number;
   soundBtnLabelOn: boolean;
   onSoundToggle: () => void;
   onStopGame: () => void;
+  volume: number;
+  onVolumeChange: (value: number) => void;
 }
 
 export interface TransactionsTableProps {
   transactions: Transaction[];
+  clearTransactions?: () => void;
 }
 
 export interface LeaderboardPopupProps {
@@ -29,12 +35,23 @@ export interface Transaction {
   type: string;
   link: string;
   date: number;
+  tx_url?: string;
+  error?: string;
+  userAddress?: string;
 }
 
 export interface LeaderboardRecord {
   id: string;
   score: number;
   tx: string;
+  address: string;
+  hash_tx: string;
+  url: string;
+  total_score?: number;
+  username?: string;
+  updated_at?: string;
+  record_score?: number;
+  wallet?: string;
 }
 
 export interface ImageCache {
@@ -47,13 +64,16 @@ export interface ImageCache {
   player: {
     [key: string]: HTMLImageElement;
   };
+  weapons: {
+    [key: string]: HTMLImageElement;
+  };
 }
 
 // Game Stats
 export interface GameStats {
   totalScore: number;
   killCount: number;
-  fireMondalakKillKount: number;
+  fireMolandakKillCount: number;
   damageTaken: number;
   damageGiven: number;
   healsUsed: number;
@@ -87,17 +107,25 @@ export interface Explosion {
 export interface UseTransactionsReturn {
   transactions: Transaction[];
   handleMint: (killCount: number) => void;
-  handleTotalScore: (score: number, isDead: boolean) => void;
+  handleTotalScore: (score: number, isDead: boolean, unitType?: 'FLY' | 'FIRE_MOLANDAK' | null, gameStat?: GameStats) => void;
+  handleFaucet: (address: string) => Promise<void>;
+  clearTransactions: () => void;
 }
 
 // Utils Types
-export interface LeaderboardResponse {
+export type LeaderboardResponse = {
   url?: string;
-  detail?: string;
-}
+  error: string;
+  message?: string;
+  tx_url?: string;
+  mon?: number;
+  tx?: string;
+  userAddress?: string;
+  deadline_seconds?: number;
+};
 
 export interface UpdateTransactionCallback {
-  (): Promise<LeaderboardResponse>;
+  (): Promise<any>;
 }
 
 // Error Types

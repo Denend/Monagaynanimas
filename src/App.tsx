@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import './App.css';
-import Game from './components/Game/Game.tsx';
+const Game = React.lazy(() => import('./components/Game/Game.tsx'));
 import { Providers } from './providers/Provider.tsx';
 function App() {
   return (
     <div className="App">
       <Providers>
-        <Game />
+        <Suspense fallback={<div />}> 
+          <Game />
+        </Suspense>
       </Providers>
     </div>
   );

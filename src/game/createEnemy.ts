@@ -1,9 +1,11 @@
 import { Enemy } from "./classes/Enemy.ts";
+import { Weapon } from "./classes/Weapon.ts";
 import { CONFIG } from "./config.ts";
+import { getImageFromCache } from "./imageCache.ts";
 
 const ENEMY_COLORS = ["#eb4034", "#635a19", "#b34a09", "#0a6349", "#0b1852", "#380613", "#000000"];
 
-export default function createEnemy(enemiesRef, difficulty: number, firstPlayer: boolean, type: string, frameMultiplier: number, imageCache: any) {
+export default function createEnemy(enemiesRef, difficulty: number, firstPlayer: boolean, type: string, frameMultiplier: number, imageCache?: any) {
   if (enemiesRef.length >= CONFIG.MAX_ENEMIES) {
     return enemiesRef;
   }
@@ -22,26 +24,26 @@ export default function createEnemy(enemiesRef, difficulty: number, firstPlayer:
   const fireRate = type === "fire" ? 800 : Math.max(baseFireRate / difficultyMultiplier, 800);
   const moveSpeed = type === "fire" ? 5 * frameMultiplier : Math.min(baseMoveSpeed * difficultyMultiplier, 1.5);
 
-  const enemyKeys = Object.keys(imageCache.enemies);
-  const fireKeys = Object.keys(imageCache.fire);
+  const DEFAULT_ENEMY_SRCS = ["/chars/10.svg","/chars/11.svg","/chars/12.svg","/chars/13.svg","/chars/14.svg"]; 
+  const FIRE_SRCS = ["/chars/8.svg"];
 
-  let characterImage;
-  if (type === "fire" && fireKeys.length > 0) {
-    characterImage = imageCache.fire[0];
-  } else if (enemyKeys.length > 0) {
-    const randomKey = enemyKeys[Math.floor(Math.random() * enemyKeys.length)];
-    characterImage = imageCache.enemies[randomKey];
-  }
-
+  const src = type === "fire" ? FIRE_SRCS[0] : DEFAULT_ENEMY_SRCS[Math.floor(Math.random() * DEFAULT_ENEMY_SRCS.length)];
+  let characterImage = getImageFromCache(src);
   if (!characterImage) {
-    console.error("Can't get image for monanimal type:", type);
+    const img = new Image();
+    img.src = src;
+    characterImage = img;
   }
 
   const bulletColor = type === "fire" ? "orange" : ENEMY_COLORS[Math.floor(Math.random() * ENEMY_COLORS.length)];
+  const weaponImage = imageCache?.weapons?.[0];
 
   const spawnTime = firstPlayer ? Date.now() + 3000 : Date.now();
   
-  enemiesRef.push(new Enemy(randomX, randomY, bulletSpeed, fireRate, moveSpeed, bulletColor, spawnTime, type, characterImage));
+  const enemy = new Enemy(randomX, randomY, bulletSpeed, fireRate, moveSpeed, bulletColor, spawnTime, type, characterImage);
+  // Assign a basic weapon to enemy for future extensibility
+  enemy.weapon = new Weapon(fireRate, type === 'fire' ? 18 : 6, type === 'fire' ? 4 : 1, bulletColor, weaponImage);
+  enemiesRef.push(enemy);
   
   return enemiesRef;
 }

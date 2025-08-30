@@ -1,5 +1,6 @@
 import { CONFIG } from '../config.ts';
 import { Bullet } from './Bullet.ts';
+import { Weapon } from './Weapon.ts';
 
 export class Mondalak {
   x: number;
@@ -9,7 +10,7 @@ export class Mondalak {
   bulletSpeed: number;
   lastShot: number;
   isPlayer: boolean;
-  fireRate: number;
+  fireRate: number; // kept for backward compat; derived from weapon when present
   bulletColor: string;
   health: number;
   shakeOffsetX: number = 0; 
@@ -22,8 +23,11 @@ export class Mondalak {
   barrelThickness: number = 6;
   shootingAnimation: boolean = false;
   characterImage: HTMLImageElement;
+  weaponImage?: HTMLImageElement;
   isBuffed: boolean;
   type: string;
+  cornerRadius: number;
+  weapon: Weapon | null;
   constructor(
     x: number,
     y: number,
@@ -33,6 +37,8 @@ export class Mondalak {
     bulletColor: string,
     type: string,
     characterImage: HTMLImageElement,
+    weaponImage?: HTMLImageElement,
+    cornerRadius: number = 10,
   ) {
     this.x = x;
     this.y = y;
@@ -43,11 +49,14 @@ export class Mondalak {
     this.lastShot = 0;
     this.isPlayer = isPlayer;
     this.bulletColor = bulletColor;
-    this.health = isPlayer ? 4 : 2; 
+    this.health = isPlayer ? 100004 : 2; 
     this.maxHealth = this.health; 
     this.isBuffed = false;
     this.type = type; 
     this.characterImage = characterImage;
+    this.weaponImage = weaponImage;
+    this.cornerRadius = cornerRadius;
+    this.weapon = null;
     if (this.type === "fire") {
       this.width = this.width + 30
       this.height = this.height + 40
@@ -68,11 +77,84 @@ export class Mondalak {
       height = 35;
     }
 
-    ctx.scale(-1, 1); 
-    ctx.drawImage(this.characterImage, -30, -15, width, height);
+    if (this.isPlayer) {
+      ctx.scale(-1, 1); 
+    }
+    // For player keep strict sizes; for others keep computed width/height
+    const characterW = this.isPlayer ? 50 : width;
+    const characterH = this.isPlayer ? 50 : height;
+    const weaponW = this.weaponImage ? (this.isPlayer ? 75 : Math.min(width * 0.6, 48)) : 0;
+    const weaponH = this.weaponImage ? (this.isPlayer ? 30 : Math.min(height * 0.6, 24)) : 0;
+
+    // draw character as rounded-rect masked image (first)
+    this.drawRoundedImage(
+      ctx,
+      this.characterImage,
+      -characterW / 2 + 20,
+      -characterH / 2 - 10,
+      characterW,
+      characterH,
+      this.cornerRadius,
+      true
+    );
+
+    // draw weapon on top so it looks held
+    if (this.weaponImage) {
+      // Because of ctx.scale(-1, 1), forward direction is towards negative X.
+      // Place the weapon slightly forward and centered vertically on the body.
+      const forwardShift = -characterW * 0.45; // move towards barrel/front
+      const ultScale = (window as any).__ULT_WEAPON_SCALE__ as number | undefined;
+      const scale = ultScale && ultScale > 0 ? ultScale : 1;
+      const weaponX = forwardShift - (weaponW * scale) * 0.15; // compensate so grip sits near center
+      const weaponY = - (weaponH * scale) * 0.05; // slight upward offset to overlap "hands"
+      const imgToDraw = (window as any).__ULT_WEAPON_OVERRIDE__ as HTMLImageElement | undefined;
+      const weaponImg = imgToDraw ?? this.weaponImage;
+      this.drawRoundedImage(
+        ctx,
+        weaponImg,
+        weaponX,
+        weaponY,
+        weaponW * scale,
+        weaponH * scale,
+        Math.max(4, Math.floor(this.cornerRadius / 2)),
+        false
+      );
+    }
 
     this.drawHealthBar(ctx);
 
+    ctx.restore();
+  }
+
+  private drawRoundedImage(
+    ctx: CanvasRenderingContext2D,
+    image: HTMLImageElement,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+    flipX: boolean = false
+  ) {
+    const r = Math.min(radius, width/2, height/2);
+    ctx.save();
+    if (flipX) {
+      ctx.scale(-1, 1);
+      x = -x - width;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + width - r, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+    ctx.lineTo(x + width, y + height - r);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    ctx.lineTo(x + r, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(image, x, y, width, height);
     ctx.restore();
   }
 
@@ -108,21 +190,23 @@ export class Mondalak {
 
   shoot(): Bullet | null {
     //Only for enemies
-    if (Date.now() - this.lastShot > this.fireRate) {
+    const effectiveFireRate = this.weapon ? this.weapon.fireRate : this.fireRate;
+    if (Date.now() - this.lastShot > effectiveFireRate) {
       this.lastShot = Date.now();
 
       const barrelEndX = this.x + Math.cos(this.angle) * this.barrelSize;
       const barrelEndY = this.y + Math.sin(this.angle) * this.barrelSize;
 
-      const bulletSize = this.type === "fire" ? 18 : 6;
-      const bulletDamage = this.type === "fire" ? 4 : 1;
+      const bulletSize = this.weapon ? this.weapon.bulletSize : (this.type === "fire" ? 18 : 6);
+      const bulletDamage = this.weapon ? this.weapon.damage : (this.type === "fire" ? 4 : 1);
+      const bulletColor = this.weapon ? this.weapon.color : this.bulletColor;
 
       return new Bullet(
           barrelEndX,  
           barrelEndY,  
           this.angle,
           this.bulletSpeed,
-          this.bulletColor,
+          bulletColor,
           bulletSize,
           this.isPlayer,
           bulletDamage,
@@ -138,15 +222,19 @@ export class Mondalak {
     if (this.health <= 0) {
       if ( !this.isPlayer ) {
         const random = Math.floor(Math.random() * 10);
-        if ( random > 7) { 
-          return "drop_buff";
+        if (random > 6) { 
+          const additionalRandom = Math.floor(Math.random() * 10);
+          if ( additionalRandom > 8) {
+            return "drop_buff";
+          } else {
+            return "drop_heart";
+          }
         }
-
-        return "drop_heart"
+        return "explode"; 
       }
-      return "explode"; 
+      return true;
     } 
-   
+    
     return false;
   }
 

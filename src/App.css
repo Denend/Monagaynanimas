@@ -1,3 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Josefin+Sans:wght@500&family=Caveat:wght@400..700&display=swap');
+
+.cd-icon.ready img {
+  filter: none;
+}
+
+.cd-icon.cooling img {
+  filter: grayscale(50%) brightness(0.8);
+}
+
+.cd-icon .cd-backdrop {
+  opacity: 1;
+}
+
+.cd-icon.ready .cd-backdrop {
+  opacity: 0;
+}
+
+.ui-login-btn, .play-btn, .twitter-share-btn, .play-btn-guest {
+  width: 220px;
+}
+.game-menu {
+  margin-top: 20px;
+}
 .game-container {
   position: relative;
   margin: 20px auto;
@@ -5,22 +29,29 @@
 }
 html {
   height: 100vh;
+  padding: 0 !important;
 }
 body {
   transform-origin: top left;
+  overflow-x: hidden;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  background: #e8e8e8;
 }
-
-
-
-
-
-
+#privy-dialog  > div  {
+  width: 100%;
+  height: 100%;
+}
+#privy-dialog [data-headlessui-state="open"] > div{
+  transform: scale(1.2);
+}
 @media (max-height: 1199px) {
   body {
     transform: scale(0.8);
     width: 124%;
     height: 124%;
   }
+  
 }
 @media (max-height: 900px) {
   body {
@@ -28,6 +59,7 @@ body {
     width: 143%;
     height: 143%;
   }
+
 }
 @media (max-height: 800px) {
   body {
@@ -35,6 +67,7 @@ body {
     width: 167%;
     height: 167%;
   }
+  
 }
 
 @media (max-height: 700px) {
@@ -43,6 +76,7 @@ body {
     width: 200%;
     height: 200%;
   }
+  
 }
 
 *:not(.transactions) {
@@ -54,10 +88,12 @@ canvas {
   overflow: hidden;
   border-radius: 8px;
 }
-
+#privy-dialog .hdMpsv {
+  width: auto;
+}
 .game-menu {
   position: absolute;
-  top: 50%;
+  top: 54%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
@@ -75,6 +111,11 @@ button {
   transition: .3s all ease;
 }
 
+.play-btn-guest {
+  background: #8470f790;
+
+}
+
 button:hover {
   opacity: .7;
 }
@@ -90,7 +131,11 @@ button:hover {
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-.game-menu button:hover {
+.game-menu a {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  text-decoration: none;
+}
+.game-menu button:hover, .game-menu a:hover {
   transform: scale(1.1);
   opacity: 0.9;
 }
@@ -113,12 +158,15 @@ button:hover {
   left: 0;
   width: 100%;
   height: 900px;
-  background-image: url('/public/bg.jpg');
+  background-image: url('/public/bg.png');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   border-radius: 8px;
 
+}
+button.character-select-button {
+  border-radius: 10px !important;
 }
 .coundown {
   display: flex;
@@ -149,7 +197,7 @@ p {
 
 .game-stat {
   position: absolute;
-  top: 60%;
+  top: 65%;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -178,7 +226,11 @@ p {
   color: #07192e;
 }
 .bg-mobile {
+  overflow: hidden;
+  height: 100vh;
   min-height: 100%;
+  min-width: 100%;
+  transform: scale(1.02);
 }
 
 .popup-overlay {
@@ -258,11 +310,73 @@ p {
   transition: 0.3s all ease;
 }
 
+.balance-container {
+  position: absolute;
+  top: 10px;
+  left: 160px;
+  padding: 8px 16px;
+  background: #6e54ff40;
+  font-weight: 700;
+  color: white;
+  border-radius: 32px;
+}
+.balance-container p {
+  margin: 0;
+}
+.username-container {
+  position: absolute;
+  top: 10px;
+  left: 300px;
+  padding: 8px 16px;
+  background: #6e54ff40;
+  font-weight: 700;
+  color: white;
+  border-radius: 32px;
+}
+.username-container p {
+  margin: 0;
+}
 .leaderboard-button:hover {
   opacity: 0.7;
 }
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+}
+.login-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+}
+.export-wallet-btn {
+  position: absolute;
+  top: 10px;
+  right: 120px;
+}
+.delegate-wallet-btn {
+  position: absolute;
+  top: 10px;
+  right: 280px;
+}
+.tabs {
+  display: flex;
+  gap: 10px;
+  padding: 16px 0 32px 0;
+  justify-content: center;
+}
+.tab-button {
+  padding: 8px 16px;
+  background: white;
+  color: #6e54ff;
+  border: 1px solid #6e54ff;
+  border-radius: 32px;
+}
+.tab-button.active {
+  background: #6e54ff;
+  color: white;
+  border: 1px solid #6e54ff;
+ 
 }

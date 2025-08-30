@@ -30,8 +30,6 @@ export const FrameMultiplierProvider: React.FC<{ children: React.ReactNode }> = 
       const refreshRate = await measureFrameRate();
       let multiplier = refreshRate >= 65 ? 1 : 1.5;
       setFrameMultiplier(multiplier);
-      console.log("Refresh rate: ", refreshRate);
-      console.log("Frame multiplier: ", multiplier);
     };
 
     calculateMultiplier();

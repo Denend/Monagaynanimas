@@ -1,12 +1,14 @@
 import React from 'react';
 import { ProvidersProps } from '../types.ts';
 import { FrameMultiplierProvider } from './FrameMultiplierProvider.tsx';
-
+import PrivyWalletProvider from './PrivyWalletProvider.tsx';
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
-    <FrameMultiplierProvider>
-      {children}
-    </FrameMultiplierProvider>
+    <PrivyWalletProvider>
+      <FrameMultiplierProvider>
+        {children}
+      </FrameMultiplierProvider>
+    </PrivyWalletProvider>
   );
 };
 

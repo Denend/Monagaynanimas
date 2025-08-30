@@ -3,13 +3,20 @@
   padding-bottom: 50px;
 }
 
+.transactions .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .transactions h2 {
   font-size: 42px;
   -webkit-text-fill-color: transparent;
   background-image: linear-gradient(90deg, #7663e0, #9489fcc4);
   -webkit-background-clip: text;
   background-clip: text;
-  margin-bottom: 30px;
+  margin-bottom: 0;
 }
 
 .transactions-table {
@@ -25,6 +32,7 @@
 .transactions-table td {
   padding: 12px;
   text-align: left;
+  max-width: 604px;
 }
 .table-wrapper {
   background-color: #fff;
@@ -63,7 +71,12 @@ tr {
 }
 
 .transactions-table tr[datatype="Mint"] {
-  background: rgba(255, 145, 0, 0.05);
+  background:rgba(255, 145, 0, 0.25);
+}
+
+
+.transactions-table tr[datatype="Faucet"] {
+  background: rgba(255, 238, 0, 0.2);
 }
 
 .transactions-table th,
@@ -71,4 +84,19 @@ tr {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.clear-btn {
+  background-color: #7663e0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all ease-in-out 0.2s;
+}
+
+.clear-btn:hover {
+  background-color: #9483f0;
 }
