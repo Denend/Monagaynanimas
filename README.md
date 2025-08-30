@@ -1,3 +1,12 @@
+# Production Link
+
+https://monfunimals.xyz/
+
+# Farcaster miniapp version (reduced functionality version)
+
+https://farcaster.xyz/miniapps/ywWY5OuZbl_0/monagayanimals
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
