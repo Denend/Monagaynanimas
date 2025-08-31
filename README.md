@@ -7,6 +7,15 @@ https://monfunimals.xyz/
 https://farcaster.xyz/miniapps/ywWY5OuZbl_0/monagayanimals
 
 
+#Main onchain score contract https://testnet.monadexplorer.com/address/0xF72e3EE1798eEE077d72912ED7245f3Dd2c72cF7
+
+#Fire molandak mint contract https://testnet.monadexplorer.com/address/0x7D6a748C89C902dDDD5F7B30B840136953Fb933b
+
+# Farcaster score NFT contract https://testnet.monadexplorer.com/address/0x5d44635D3FfeFf64973c018F7Eb76DC2b27c071c
+
+# Monad Game ID game profile https://monad-games-id-site.vercel.app/leaderboard?page=1&gameId=225
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
